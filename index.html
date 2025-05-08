@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thread</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      font-family: sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .container-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .container1, .container2 {
+      background-color: #f1f1f1;
+      box-shadow: 1px 1px 5px 1px black;
+      border-radius: 10px;
+      width: 300px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    button {
+      background-color: rgb(4, 120, 253);
+      color: white;
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: rgb(1, 75, 160);
+      cursor: pointer;
+    }
+
+    .bar-group {
+      margin-bottom: 15px;
+    }
+
+    progress {
+      width: 100%;
+      height: 20px;
+    }
+
+    .percent-label {
+      font-size: 14px;
+      margin-top: 5px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Progress Bar Thread Sinkronus & Asinkronus</h1>
+
+  <div class="container-wrapper">
+    <div class="container1">
+      <h2>Sinkronus</h2>
+      <button onclick="startSync()">Mulai</button>
+      <div id="sync-bars">
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+      </div>
+    </div>
+
+    <div class="container2">
+      <h2>Asinkronus</h2>
+      <button onclick="startAsync()">Mulai</button>
+      <div id="async-bars">
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+        <div class="bar-group"><progress value="0" max="100"></progress><div class="percent-label"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function resetBars(containerId) {
+      const groups = document.querySelectorAll(`#${containerId} .bar-group`);
+      groups.forEach(group => {
+        group.querySelector("progress").value = 0;
+        group.querySelector(".percent-label").textContent = "";
+      });
+    }
+
+    function startSync() {
+      resetBars("sync-bars");
+      const groups = document.querySelectorAll("#sync-bars .bar-group");
+      let index = 0;
+
+      function fillBar() {
+        if (index < groups.length) {
+          const bar = groups[index].querySelector("progress");
+          const label = groups[index].querySelector(".percent-label");
+          let value = 0;
+          function increment() {
+            if (value <= 100) {
+              bar.value = value;
+              label.textContent = value + "%";
+              value++;
+              setTimeout(increment, 20);
+            } else {
+              index++;
+              fillBar();
+            }
+          }
+          increment();
+        }
+      }
+
+      fillBar();
+    }
+
+    function startAsync() {
+      resetBars("async-bars");
+      const groups = document.querySelectorAll("#async-bars .bar-group");
+
+      groups.forEach(group => {
+        const bar = group.querySelector("progress");
+        const label = group.querySelector(".percent-label");
+        let value = 0;
+        const interval = setInterval(() => {
+          if (value <= 100) {
+            bar.value = value;
+            label.textContent = value + "%";
+            value++;
+          } else {
+            clearInterval(interval);
+          }
+        }, 20);
+      });
+    }
+  </script>
+</body>
+</html>
